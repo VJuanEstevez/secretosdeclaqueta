@@ -1,0 +1,22 @@
+<div class="movie-carousel">
+  <div class="movie-carousel__viewport" role="region" [attr.aria-label]="label()">
+    <div class="movie-carousel__marquee" [style.--marquee-duration.s]="movies().length * 4">
+      <ul class="movie-carousel__track">
+        @for (movie of movies(); track movie.id) {
+          <li class="movie-carousel__slide">
+            <app-movie-card [movie]="movie" (reveal)="reveal.emit($event)" />
+          </li>
+        }
+      </ul>
+
+      <!-- Copia visual para el bucle continuo: oculta y sin foco para AT/teclado. -->
+      <ul class="movie-carousel__track" aria-hidden="true" inert>
+        @for (movie of movies(); track movie.id) {
+          <li class="movie-carousel__slide">
+            <app-movie-card [movie]="movie" />
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</div>

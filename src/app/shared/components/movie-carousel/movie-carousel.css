@@ -1,0 +1,57 @@
+.movie-carousel {
+  /* Difumina los bordes para que la costura del bucle no se note. */
+  mask-image: linear-gradient(90deg, transparent, black 4%, black 96%, transparent);
+}
+
+.movie-carousel__viewport {
+  overflow: hidden;
+}
+
+.movie-carousel__marquee {
+  display: flex;
+  width: max-content;
+  animation: movie-carousel-scroll var(--marquee-duration, 40s) linear infinite;
+}
+
+.movie-carousel:hover .movie-carousel__marquee,
+.movie-carousel:focus-within .movie-carousel__marquee {
+  animation-play-state: paused;
+}
+
+.movie-carousel__track {
+  display: flex;
+  gap: var(--sdc-space-lg);
+  margin: 0;
+  padding-block: var(--sdc-space-xs) var(--sdc-space-md);
+  padding-inline-end: var(--sdc-space-lg);
+  list-style: none;
+}
+
+.movie-carousel__slide {
+  flex: 0 0 clamp(9rem, 18vw, 12rem);
+}
+
+@keyframes movie-carousel-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Sin animación automática: se convierte en una lista con scroll manual. */
+@media (prefers-reduced-motion: reduce) {
+  .movie-carousel__marquee {
+    animation: none;
+    width: auto;
+  }
+
+  .movie-carousel__track[aria-hidden='true'] {
+    display: none;
+  }
+
+  .movie-carousel__viewport {
+    overflow-x: auto;
+  }
+}

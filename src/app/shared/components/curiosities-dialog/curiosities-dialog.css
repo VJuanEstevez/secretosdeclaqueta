@@ -1,0 +1,171 @@
+.curiosities-dialog {
+  width: min(46rem, calc(100vw - 2rem));
+  max-height: min(85dvh, 52rem);
+  padding: 0;
+  border: 1px solid var(--sdc-color-border);
+  border-radius: var(--sdc-radius-lg);
+  background-color: var(--sdc-color-surface);
+  color: var(--sdc-color-text);
+  overflow: hidden;
+}
+
+.curiosities-dialog::backdrop {
+  background-color: rgb(4 4 8 / 78%);
+  backdrop-filter: blur(3px);
+}
+
+.curiosities-dialog[open] {
+  animation: curiosities-dialog-in 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@keyframes curiosities-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+}
+
+.curiosities-dialog__panel {
+  display: flex;
+  flex-direction: column;
+  max-height: inherit;
+}
+
+.curiosities-dialog__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sdc-space-md);
+  padding: var(--sdc-space-lg) var(--sdc-space-lg) var(--sdc-space-md);
+  border-bottom: 1px solid var(--sdc-color-border);
+  background-image: linear-gradient(180deg, rgb(232 181 75 / 10%), transparent);
+}
+
+.curiosities-dialog__eyebrow {
+  color: var(--sdc-color-accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.curiosities-dialog__title {
+  margin-top: var(--sdc-space-2xs);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+}
+
+.curiosities-dialog__meta {
+  color: var(--sdc-color-text-muted);
+  font-size: 0.85rem;
+}
+
+.curiosities-dialog__close {
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--sdc-color-border);
+  border-radius: 50%;
+  background-color: var(--sdc-color-backdrop);
+  cursor: pointer;
+}
+
+.curiosities-dialog__close:hover {
+  border-color: var(--sdc-color-accent);
+}
+
+.curiosities-dialog__content {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: var(--sdc-space-lg);
+}
+
+.curiosities-dialog__state {
+  display: flex;
+  align-items: center;
+  gap: var(--sdc-space-sm);
+  color: var(--sdc-color-text-muted);
+}
+
+.curiosities-dialog__state--error {
+  color: var(--sdc-color-danger);
+}
+
+.curiosities-dialog__spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--sdc-color-border);
+  border-top-color: var(--sdc-color-accent);
+  border-radius: 50%;
+  animation: curiosities-dialog-spin 800ms linear infinite;
+}
+
+@keyframes curiosities-dialog-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.curiosities-dialog__retry {
+  margin-top: var(--sdc-space-md);
+  padding: var(--sdc-space-xs) var(--sdc-space-lg);
+  border: 1px solid var(--sdc-color-accent);
+  border-radius: 999px;
+  background: none;
+  color: var(--sdc-color-accent);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.curiosities-dialog__notice {
+  margin-bottom: var(--sdc-space-md);
+  padding: var(--sdc-space-sm) var(--sdc-space-md);
+  border-left: 3px solid var(--sdc-color-accent);
+  border-radius: var(--sdc-radius-sm);
+  background-color: var(--sdc-color-surface-raised);
+  color: var(--sdc-color-text-muted);
+  font-size: 0.85rem;
+}
+
+.curiosities-dialog__list {
+  display: grid;
+  gap: var(--sdc-space-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: secret;
+}
+
+.curiosities-dialog__item {
+  position: relative;
+  padding: var(--sdc-space-md) var(--sdc-space-md) var(--sdc-space-md) var(--sdc-space-2xl);
+  border: 1px solid var(--sdc-color-border);
+  border-radius: var(--sdc-radius-md);
+  background-color: var(--sdc-color-backdrop);
+}
+
+.curiosities-dialog__number {
+  position: absolute;
+  top: var(--sdc-space-md);
+  left: var(--sdc-space-md);
+  font-family: var(--sdc-font-display);
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--sdc-color-accent);
+}
+
+.curiosities-dialog__item-title {
+  font-size: 1.05rem;
+}
+
+.curiosities-dialog__item-body {
+  margin-top: var(--sdc-space-2xs);
+  color: var(--sdc-color-text-muted);
+  font-size: 0.92rem;
+}
+
+@media (max-width: 34rem) {
+  .curiosities-dialog__header,
+  .curiosities-dialog__content {
+    padding-inline: var(--sdc-space-md);
+  }
+}

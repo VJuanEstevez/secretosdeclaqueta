@@ -1,0 +1,53 @@
+<section class="search-bar" aria-labelledby="search-bar-title">
+  <h2 class="sdc-visually-hidden" id="search-bar-title">Buscar películas</h2>
+
+  <form
+    class="search-bar__form"
+    role="search"
+    (submit)="$event.preventDefault(); onSubmit(searchInput.value)"
+  >
+    <label class="sdc-visually-hidden" for="search-bar-input">
+      Buscar películas por título o género
+    </label>
+
+    <span class="search-bar__icon" aria-hidden="true">
+      <svg
+        viewBox="0 0 24 24"
+        width="20"
+        height="20"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <circle cx="11" cy="11" r="7" />
+        <path d="m20 20-3.6-3.6" stroke-linecap="round" />
+      </svg>
+    </span>
+
+    <input
+      class="search-bar__input"
+      id="search-bar-input"
+      #searchInput
+      type="search"
+      name="q"
+      autocomplete="off"
+      maxlength="80"
+      placeholder="Busca una película"
+      (input)="onInput(searchInput.value)"
+    />
+
+    @if (searchInput.value) {
+      <button class="search-bar__clear" type="button" (click)="onClear(searchInput)">
+        <span class="sdc-visually-hidden">Borrar la búsqueda</span>
+        <span aria-hidden="true">✕</span>
+      </button>
+    }
+
+    <button class="search-bar__submit" type="submit">Buscar</button>
+  </form>
+
+  <!-- Cambios de resultado anunciados sin robar el foco al campo de texto. -->
+  <p class="sdc-visually-hidden" role="status" aria-live="polite">
+    {{ catalog.resultsSummary() }}
+  </p>
+</section>

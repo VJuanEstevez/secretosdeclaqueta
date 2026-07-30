@@ -1,0 +1,71 @@
+<dialog
+  class="curiosities-dialog"
+  #dialog
+  aria-labelledby="curiosities-dialog-title"
+  (close)="movie.set(null)"
+>
+  @if (movie(); as current) {
+    <article class="curiosities-dialog__panel">
+      <header class="curiosities-dialog__header">
+        <div class="curiosities-dialog__heading">
+          <p class="curiosities-dialog__eyebrow">5 secretos de claqueta</p>
+          <h2 class="curiosities-dialog__title" id="curiosities-dialog-title">
+            {{ current.title }}
+          </h2>
+          <p class="curiosities-dialog__meta">
+            {{ current.releaseYear ?? 'Año desconocido' }}
+            @if (current.genres.length) {
+              <span aria-hidden="true"> · </span>{{ current.genres.join(', ') }}
+            }
+          </p>
+        </div>
+
+        <button class="curiosities-dialog__close" type="button" (click)="close()">
+          <span class="sdc-visually-hidden">Cerrar la ficha de curiosidades</span>
+          <span aria-hidden="true">✕</span>
+        </button>
+      </header>
+
+      <div class="curiosities-dialog__content" aria-live="polite">
+        @switch (status()) {
+          @case ('loading') {
+            <p class="curiosities-dialog__state">
+              <span class="curiosities-dialog__spinner" aria-hidden="true"></span>
+              Revelando los secretos de «{{ current.title }}»…
+            </p>
+          }
+
+          @case ('error') {
+            <p class="curiosities-dialog__state curiosities-dialog__state--error" role="alert">
+              {{ errorMessage() }}
+            </p>
+            <button class="curiosities-dialog__retry" type="button" (click)="retry()">
+              Reintentar
+            </button>
+          }
+
+          @case ('ready') {
+            @if (isSimulated()) {
+              <p class="curiosities-dialog__notice">
+                Modo demostración: fichas generadas en el navegador a partir de los metadatos.
+                Configura <code>aiEndpoint</code> en <code>public/env.js</code> para usar la IA.
+              </p>
+            }
+
+            <ol class="curiosities-dialog__list">
+              @for (curiosity of result()?.items ?? []; track curiosity.title; let i = $index) {
+                <li class="curiosities-dialog__item">
+                  <span class="curiosities-dialog__number" aria-hidden="true">
+                    {{ i + 1 }}
+                  </span>
+                  <h3 class="curiosities-dialog__item-title">{{ curiosity.title }}</h3>
+                  <p class="curiosities-dialog__item-body">{{ curiosity.body }}</p>
+                </li>
+              }
+            </ol>
+          }
+        }
+      </div>
+    </article>
+  }
+</dialog>

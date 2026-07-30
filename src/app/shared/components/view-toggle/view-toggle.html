@@ -1,0 +1,32 @@
+<div class="view-toggle" role="group" aria-label="Cambiar tipo de vista">
+  <button
+    class="view-toggle__button"
+    [class.view-toggle__button--active]="view() === 'grid'"
+    type="button"
+    [attr.aria-pressed]="view() === 'grid'"
+    (click)="viewChange.emit('grid')"
+  >
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+      <rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor" />
+      <rect x="14" y="3" width="7" height="7" rx="1.5" fill="currentColor" />
+      <rect x="3" y="14" width="7" height="7" rx="1.5" fill="currentColor" />
+      <rect x="14" y="14" width="7" height="7" rx="1.5" fill="currentColor" />
+    </svg>
+    <span class="sdc-visually-hidden">Vista en cuadrícula</span>
+  </button>
+
+  <button
+    class="view-toggle__button"
+    [class.view-toggle__button--active]="view() === 'list'"
+    type="button"
+    [attr.aria-pressed]="view() === 'list'"
+    (click)="viewChange.emit('list')"
+  >
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+      <rect x="3" y="4" width="18" height="3.4" rx="1.2" fill="currentColor" />
+      <rect x="3" y="10.3" width="18" height="3.4" rx="1.2" fill="currentColor" />
+      <rect x="3" y="16.6" width="18" height="3.4" rx="1.2" fill="currentColor" />
+    </svg>
+    <span class="sdc-visually-hidden">Vista en lista</span>
+  </button>
+</div>

@@ -1,0 +1,32 @@
+.view-toggle {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--sdc-color-border);
+  border-radius: 999px;
+  background-color: var(--sdc-color-surface);
+}
+
+.view-toggle__button {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--sdc-color-text-muted);
+  cursor: pointer;
+  transition:
+    color var(--sdc-transition),
+    background-color var(--sdc-transition);
+}
+
+.view-toggle__button:hover {
+  color: var(--sdc-color-text);
+}
+
+.view-toggle__button--active {
+  color: var(--sdc-color-accent-contrast);
+  background-color: var(--sdc-color-accent);
+}

@@ -1,0 +1,14 @@
+<div class="genre-filter">
+  <label class="sdc-visually-hidden" for="genre-filter-select">Filtrar por género</label>
+  <select
+    class="genre-filter__select"
+    id="genre-filter-select"
+    [value]="selected() ?? ''"
+    (change)="onChange($any($event.target).value)"
+  >
+    <option value="">Todos los géneros</option>
+    @for (genre of genres(); track genre) {
+      <option [value]="genre">{{ genre }}</option>
+    }
+  </select>
+</div>

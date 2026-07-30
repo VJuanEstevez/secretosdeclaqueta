@@ -1,0 +1,118 @@
+:host {
+  display: block;
+}
+
+.home__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sdc-space-md);
+  padding-block: var(--sdc-space-lg) var(--sdc-space-md);
+  text-align: center;
+}
+
+.home__title {
+  max-width: 24ch;
+  font-size: clamp(2rem, 5.2vw, 3.75rem);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.home__title-accent {
+  position: relative;
+  font-style: italic;
+  color: var(--sdc-color-accent);
+}
+
+/* Subrayado que evoca la marca de una franja de claqueta. */
+.home__title-accent::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 -0.12em 0;
+  height: 0.1em;
+  background-image: var(--sdc-clapper-stripes);
+  background-size: 40% 100%;
+}
+
+.home__lede {
+  max-width: 100ch;
+  color: var(--sdc-color-text-muted);
+  font-size: clamp(0.92rem, 1.6vw, 1.08rem);
+  padding: 10px 0;
+}
+
+.home__hero app-search-bar {
+  width: 100%;
+  max-width: 32rem;
+  margin-top: var(--sdc-space-xs);
+}
+
+.home__section {
+  padding-block: var(--sdc-space-md) var(--sdc-space-lg);
+}
+
+.home__section-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sdc-space-sm);
+  margin-bottom: var(--sdc-space-md);
+}
+
+.home__section-title {
+  font-size: clamp(1.3rem, 2.6vw, 1.75rem);
+}
+
+.home__clear {
+  padding: var(--sdc-space-2xs) var(--sdc-space-md);
+  border: 1px solid var(--sdc-color-border);
+  border-radius: 999px;
+  background: none;
+  color: var(--sdc-color-text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition:
+    color var(--sdc-transition),
+    border-color var(--sdc-transition);
+}
+
+.home__clear:hover {
+  color: var(--sdc-color-accent);
+  border-color: var(--sdc-color-accent);
+}
+
+.home__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sdc-space-sm);
+  margin-bottom: var(--sdc-space-md);
+}
+
+.home__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: var(--sdc-space-lg);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home__grid--list {
+  grid-template-columns: 1fr;
+  gap: var(--sdc-space-sm);
+}
+
+.home__grid-item {
+  display: block;
+}
+
+@media (min-width: 48rem) {
+  .home__grid {
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  }
+}

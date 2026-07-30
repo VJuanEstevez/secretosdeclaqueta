@@ -1,0 +1,21 @@
+<div
+  class="status-panel"
+  [class.status-panel--error]="tone() === 'error'"
+  [attr.role]="tone() === 'error' ? 'alert' : 'status'"
+>
+  @if (tone() === 'loading') {
+    <span class="status-panel__spinner" aria-hidden="true"></span>
+  } @else {
+    <span class="status-panel__icon" aria-hidden="true">
+      {{ tone() === 'error' ? '⚠' : '🎬' }}
+    </span>
+  }
+
+  <p class="status-panel__heading">{{ heading() }}</p>
+
+  @if (description()) {
+    <p class="status-panel__description">{{ description() }}</p>
+  }
+
+  <ng-content />
+</div>

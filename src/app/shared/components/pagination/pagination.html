@@ -1,0 +1,25 @@
+@if (totalPages() > 1) {
+  <nav class="pagination" aria-label="Paginación de resultados">
+    <button
+      class="pagination__control"
+      type="button"
+      [disabled]="!canGoPrevious()"
+      (click)="go(page() - 1)"
+    >
+      <span class="sdc-visually-hidden">Página anterior</span>
+      <span aria-hidden="true">‹</span>
+    </button>
+
+    <p class="pagination__status" aria-live="polite">Página {{ page() }} de {{ totalPages() }}</p>
+
+    <button
+      class="pagination__control"
+      type="button"
+      [disabled]="!canGoNext()"
+      (click)="go(page() + 1)"
+    >
+      <span class="sdc-visually-hidden">Página siguiente</span>
+      <span aria-hidden="true">›</span>
+    </button>
+  </nav>
+}

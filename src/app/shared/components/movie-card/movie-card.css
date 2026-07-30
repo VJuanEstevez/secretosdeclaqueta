@@ -1,0 +1,191 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.movie-card {
+  position: relative;
+  height: 100%;
+}
+
+.movie-card__trigger {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sdc-space-sm);
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.movie-card__poster {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 2 / 3;
+  border: 1px solid var(--sdc-color-border);
+  border-radius: var(--sdc-radius-lg);
+  background-color: var(--sdc-color-surface-raised);
+  box-shadow: var(--sdc-shadow-card);
+  transition:
+    transform var(--sdc-transition),
+    border-color var(--sdc-transition);
+}
+
+.movie-card__trigger:hover .movie-card__poster,
+.movie-card__trigger:focus-visible .movie-card__poster {
+  transform: translateY(-6px);
+  border-color: var(--sdc-color-accent);
+}
+
+.movie-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.movie-card__fallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(165deg, var(--sdc-color-surface-raised), var(--sdc-color-backdrop));
+}
+
+.movie-card__fallback-initials {
+  font-family: var(--sdc-font-display);
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  color: var(--sdc-color-accent);
+  letter-spacing: 0.05em;
+}
+
+.movie-card__fallback-stripes {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 1.75rem;
+  background-image: var(--sdc-clapper-stripes);
+  opacity: 0.85;
+}
+
+.movie-card__rating {
+  position: absolute;
+  top: var(--sdc-space-xs);
+  left: var(--sdc-space-xs);
+  padding: 0.15rem var(--sdc-space-xs);
+  border-radius: var(--sdc-radius-sm);
+  background-color: color-mix(in srgb, var(--sdc-color-backdrop) 88%, transparent);
+  color: var(--sdc-color-accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* Cinta inferior que anuncia la acción; visible al enfocar o pasar el ratón. */
+.movie-card__reveal {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: var(--sdc-space-xs);
+  background-color: var(--sdc-color-accent);
+  color: var(--sdc-color-accent-contrast);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+  transform: translateY(100%);
+  transition: transform var(--sdc-transition);
+}
+
+.movie-card__trigger:hover .movie-card__reveal,
+.movie-card__trigger:focus-visible .movie-card__reveal {
+  transform: translateY(0);
+}
+
+.movie-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding-inline: var(--sdc-space-2xs);
+}
+
+.movie-card__title {
+  font-family: var(--sdc-font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.movie-card__meta {
+  color: var(--sdc-color-text-muted);
+  font-size: 0.8rem;
+}
+
+.movie-card__favorite {
+  position: absolute;
+  top: var(--sdc-space-xs);
+  right: var(--sdc-space-xs);
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--sdc-color-border);
+  border-radius: 50%;
+  background-color: color-mix(in srgb, var(--sdc-color-backdrop) 88%, transparent);
+  color: var(--sdc-color-text);
+  cursor: pointer;
+  transition:
+    color var(--sdc-transition),
+    transform var(--sdc-transition);
+}
+
+.movie-card__favorite:hover {
+  transform: scale(1.08);
+  color: var(--sdc-color-favorite);
+}
+
+.movie-card__favorite--on {
+  color: var(--sdc-color-favorite);
+  border-color: var(--sdc-color-favorite);
+}
+
+/* Vista en lista: fila compacta con póster reducido y sin superposiciones. */
+.movie-card--list {
+  display: flex;
+  align-items: center;
+  gap: var(--sdc-space-md);
+}
+
+.movie-card--list .movie-card__trigger {
+  flex: 1 1 auto;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--sdc-space-md);
+}
+
+.movie-card--list .movie-card__poster {
+  flex: none;
+  width: 3.75rem;
+  box-shadow: none;
+}
+
+.movie-card--list .movie-card__trigger:hover .movie-card__poster,
+.movie-card--list .movie-card__trigger:focus-visible .movie-card__poster {
+  transform: none;
+}
+
+.movie-card--list .movie-card__reveal,
+.movie-card--list .movie-card__rating {
+  display: none;
+}
+
+.movie-card--list .movie-card__body {
+  flex: 1 1 auto;
+  padding-inline: 0;
+}
+
+.movie-card--list .movie-card__favorite {
+  position: static;
+  flex: none;
+}

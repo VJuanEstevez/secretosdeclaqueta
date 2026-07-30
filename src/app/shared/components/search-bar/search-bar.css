@@ -1,0 +1,85 @@
+.search-bar {
+  width: 100%;
+}
+
+.search-bar__form {
+  display: flex;
+  align-items: center;
+  gap: var(--sdc-space-xs);
+  width: 100%;
+  padding: var(--sdc-space-2xs) var(--sdc-space-2xs) var(--sdc-space-2xs) var(--sdc-space-md);
+  border: 1px solid var(--sdc-color-border);
+  border-radius: 999px;
+  background-color: var(--sdc-color-surface);
+  transition: border-color var(--sdc-transition);
+}
+
+.search-bar__form:focus-within {
+  border-color: var(--sdc-color-accent);
+}
+
+.search-bar__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  color: var(--sdc-color-text-muted);
+}
+
+.search-bar__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: var(--sdc-space-sm) 0;
+  border: 0;
+  background: transparent;
+  outline-offset: -2px;
+}
+
+.search-bar__input::placeholder {
+  color: var(--sdc-color-text-muted);
+  text-overflow: ellipsis;
+}
+
+/* Se oculta la cruz nativa de WebKit: se usa un botón accesible propio. */
+.search-bar__input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.search-bar__clear {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: 50%;
+  background-color: var(--sdc-color-surface-raised);
+  color: var(--sdc-color-text-muted);
+  cursor: pointer;
+  transition: color var(--sdc-transition);
+}
+
+.search-bar__clear:hover {
+  color: var(--sdc-color-text);
+}
+
+.search-bar__submit {
+  flex: none;
+  padding: var(--sdc-space-sm) var(--sdc-space-lg);
+  border: 0;
+  border-radius: 999px;
+  background-color: var(--sdc-color-accent);
+  color: var(--sdc-color-accent-contrast);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color var(--sdc-transition);
+}
+
+.search-bar__submit:hover {
+  background-color: var(--sdc-color-accent-strong);
+}
+
+@media (max-width: 30rem) {
+  .search-bar__submit {
+    padding-inline: var(--sdc-space-md);
+  }
+}

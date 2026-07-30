@@ -1,0 +1,61 @@
+<article class="movie-card" [class.movie-card--list]="layout() === 'list'">
+  <button class="movie-card__trigger" type="button" (click)="reveal.emit(movie())">
+    <span class="movie-card__poster">
+      @if (movie().posterUrl) {
+        <img
+          class="movie-card__image"
+          [src]="movie().posterUrl"
+          [alt]="'Cartel de ' + movie().title"
+          loading="lazy"
+          decoding="async"
+          width="500"
+          height="750"
+        />
+      } @else {
+        <!-- Carátula generada por CSS: evita imágenes rotas sin perder identidad. -->
+        <span class="movie-card__fallback" aria-hidden="true">
+          <span class="movie-card__fallback-initials">{{ initials() }}</span>
+          <span class="movie-card__fallback-stripes"></span>
+        </span>
+      }
+
+      <span class="movie-card__rating">
+        <span aria-hidden="true">★ {{ movie().rating }}</span>
+        <span class="sdc-visually-hidden">Puntuación {{ movie().rating }} sobre 10</span>
+      </span>
+
+      <span class="movie-card__reveal" aria-hidden="true">Ver 5 secretos</span>
+    </span>
+
+    <span class="movie-card__body">
+      <span class="movie-card__title">{{ movie().title }}</span>
+      <span class="movie-card__meta">
+        {{ movie().releaseYear ?? 'Año desconocido' }}
+        @if (movie().genres.length) {
+          <span aria-hidden="true"> · </span>{{ movie().genres[0] }}
+        }
+      </span>
+    </span>
+
+    <span class="sdc-visually-hidden">Descubrir los 5 secretos de {{ movie().title }}</span>
+  </button>
+
+  <button
+    class="movie-card__favorite"
+    [class.movie-card__favorite--on]="isFavorite()"
+    type="button"
+    [attr.aria-pressed]="isFavorite()"
+    [attr.aria-label]="favoriteLabel()"
+    (click)="toggleFavorite()"
+  >
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+      <path
+        d="M12 20.6 4.7 13.3a4.6 4.6 0 0 1 6.5-6.5l.8.8.8-.8a4.6 4.6 0 1 1 6.5 6.5Z"
+        [attr.fill]="isFavorite() ? 'currentColor' : 'none'"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </button>
+</article>

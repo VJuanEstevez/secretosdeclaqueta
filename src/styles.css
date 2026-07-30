@@ -1,0 +1,160 @@
+/* =========================================================================
+   SECRETOSDECLAQUETA — estilos globales
+   Solo variables de diseño, reinicio y utilidades. Todo lo demás vive en el
+   CSS de cada componente siguiendo BEM (bloque__elemento--modificador).
+   ========================================================================= */
+
+  @import url('https://fonts.googleapis.com/css2?family=Anton&family=Cinzel:wght@700;900&display=swap');
+
+:root {
+  /* Superficies: negro de sala de cine con grises cálidos. */
+  --sdc-color-backdrop: #0b0b0f;
+  --sdc-color-surface: #15151d;
+  --sdc-color-surface-raised: #1f1f2b;
+  --sdc-color-border: #2e2e3d;
+
+  /* Texto: crema sobre negro, contraste 16:1 (AAA). */
+  --sdc-color-text: #f5f3ee;
+  /* Contraste 7.4:1 sobre --sdc-color-backdrop (AAA en texto normal). */
+  --sdc-color-text-muted: #b3b0c2;
+
+  /* Acentos: oro de claqueta y rojo de butaca. */
+  --sdc-color-accent: #e8b54b;
+  --sdc-color-accent-strong: #f2c766;
+  --sdc-color-accent-contrast: #14100a;
+  --sdc-color-favorite: #ff6b81;
+  --sdc-color-danger: #ff8a94;
+
+  --sdc-font-display: 'Cinzel', 'Times New Roman', serif;
+  --sdc-font-body: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+
+  --sdc-space-2xs: 0.25rem;
+  --sdc-space-xs: 0.5rem;
+  --sdc-space-sm: 0.75rem;
+  --sdc-space-md: 1rem;
+  --sdc-space-lg: 1.5rem;
+  --sdc-space-xl: 2.5rem;
+  --sdc-space-2xl: 4rem;
+
+  --sdc-radius-sm: 4px;
+  --sdc-radius-md: 10px;
+  --sdc-radius-lg: 18px;
+
+  --sdc-shadow-card: 0 18px 40px rgb(0 0 0 / 55%);
+  --sdc-layout-max: 78rem;
+  --sdc-transition: 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* Franja diagonal de claqueta, reutilizada en cabecera y tarjetas. */
+  --sdc-clapper-stripes: repeating-linear-gradient(
+    115deg,
+    var(--sdc-color-text) 0 22px,
+    var(--sdc-color-backdrop) 22px 44px
+  );
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* La ventana nunca hace scroll: la app ocupa exactamente 100dvh/100vw y el
+   propio contenido gestiona su desplazamiento interno cuando lo necesita. */
+body {
+  margin: 0;
+  height: 100dvh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: var(--sdc-color-backdrop);
+  color: var(--sdc-color-text);
+  font-family: var(--sdc-font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--sdc-font-display);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+/* Foco visible y homogéneo en toda la aplicación (WCAG 2.4.7). */
+:focus-visible {
+  outline: 3px solid var(--sdc-color-accent);
+  outline-offset: 3px;
+  border-radius: var(--sdc-radius-sm);
+}
+
+/* Contenido reservado a lectores de pantalla. */
+.sdc-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Enlace de salto: oculto hasta recibir el foco por teclado. */
+.sdc-skip-link {
+  position: absolute;
+  top: var(--sdc-space-xs);
+  left: var(--sdc-space-xs);
+  z-index: 100;
+  padding: var(--sdc-space-xs) var(--sdc-space-md);
+  border-radius: var(--sdc-radius-md);
+  background-color: var(--sdc-color-accent);
+  color: var(--sdc-color-accent-contrast);
+  font-weight: 700;
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform var(--sdc-transition);
+}
+
+.sdc-skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

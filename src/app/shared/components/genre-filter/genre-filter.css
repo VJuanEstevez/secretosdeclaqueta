@@ -1,0 +1,19 @@
+.genre-filter__select {
+  padding: var(--sdc-space-xs) var(--sdc-space-lg) var(--sdc-space-xs) var(--sdc-space-md);
+  border: 1px solid var(--sdc-color-border);
+  border-radius: 999px;
+  background-color: var(--sdc-color-surface);
+  color: var(--sdc-color-text);
+  cursor: pointer;
+  transition: border-color var(--sdc-transition);
+}
+
+.genre-filter__select:hover,
+.genre-filter__select:focus-visible {
+  border-color: var(--sdc-color-accent);
+}
+
+.genre-filter__select option {
+  background-color: var(--sdc-color-surface);
+  color: var(--sdc-color-text);
+}

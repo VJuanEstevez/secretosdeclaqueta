@@ -1,0 +1,41 @@
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="site-header__brand" routerLink="/" aria-label="SECRETOSDECLAQUETA, ir al inicio">
+      <span class="site-header__clapper" aria-hidden="true"></span>
+      <span class="site-header__wordmark">
+        <span class="site-header__wordmark-lead">Secretos</span>
+        <span class="site-header__wordmark-tail">de claqueta</span>
+      </span>
+    </a>
+
+    <nav class="site-header__nav" aria-label="Navegación principal">
+      <ul class="site-header__list">
+        <li class="site-header__item">
+          <a
+            class="site-header__link"
+            routerLink="/"
+            routerLinkActive="site-header__link--active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            ariaCurrentWhenActive="page"
+          >
+            Inicio
+          </a>
+        </li>
+        <li class="site-header__item">
+          <a
+            class="site-header__link"
+            routerLink="/favoritos"
+            routerLinkActive="site-header__link--active"
+            ariaCurrentWhenActive="page"
+          >
+            Favoritos
+            @if (favorites.count(); as total) {
+              <span class="site-header__badge" aria-hidden="true">{{ total }}</span>
+              <span class="sdc-visually-hidden">{{ total }} guardadas</span>
+            }
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>

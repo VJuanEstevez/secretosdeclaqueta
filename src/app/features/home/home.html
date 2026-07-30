@@ -1,0 +1,117 @@
+<section class="home__hero" aria-labelledby="home-hero-title">
+  @if (!catalog.isSearching()) {
+    <h1 class="home__title" id="home-hero-title">
+      Detrás de cada plano<br />
+      hay un <em class="home__title-accent">secreto</em>.
+    </h1>
+    <p class="home__lede">
+      Descubre los secretos de rodaje mejor guardados del cine. Tras cada fotograma se esconde una
+      historia insólita que cambió el rumbo de las películas para siempre. Explora un universo de
+      cine inédito a un solo clic.
+    </p>
+  } @else {
+    <h1 class="sdc-visually-hidden" id="home-hero-title">Buscar películas</h1>
+  }
+
+  <app-search-bar />
+</section>
+
+<section class="home__section" aria-labelledby="home-results-title">
+  @if (catalog.isSearching()) {
+    <header class="home__section-header">
+      <h2 class="home__section-title" id="home-results-title">
+        Resultados para «{{ catalog.query() }}»
+      </h2>
+      <button class="home__clear" type="button" (click)="catalog.clearSearch()">
+        Volver a las novedades
+      </button>
+    </header>
+
+    @switch (catalog.searchStatus()) {
+      @case ('loading') {
+        <app-status-panel
+          tone="loading"
+          heading="Rebobinando el archivo…"
+          description="Estamos consultando el catálogo."
+        />
+      }
+      @case ('error') {
+        <app-status-panel
+          tone="error"
+          heading="La búsqueda ha fallado"
+          [description]="catalog.errorMessage() ?? ''"
+        />
+      }
+      @default {
+        @if (catalog.results().length) {
+          <div class="home__toolbar">
+            <app-genre-filter
+              [genres]="genres()"
+              [selected]="genre()"
+              (selectedChange)="onGenreChange($event)"
+            />
+            <app-view-toggle [view]="view()" (viewChange)="view.set($event)" />
+          </div>
+
+          @if (pagedResults().length) {
+            <ul class="home__grid" [class.home__grid--list]="view() === 'list'">
+              @for (movie of pagedResults(); track movie.id) {
+                <li class="home__grid-item">
+                  <app-movie-card [movie]="movie" [layout]="view()" (reveal)="reveal($event)" />
+                </li>
+              }
+            </ul>
+
+            <app-pagination
+              [page]="page()"
+              [totalPages]="totalPages()"
+              (pageChange)="page.set($event)"
+            />
+          } @else {
+            <app-status-panel
+              tone="empty"
+              heading="Sin resultados para ese género"
+              description="Prueba a elegir otro género de la lista."
+            />
+          }
+        } @else {
+          <app-status-panel
+            tone="empty"
+            heading="Sin resultados"
+            description="Prueba con otro título, un género o el nombre original de la película."
+          />
+        }
+      }
+    }
+  } @else {
+    <header class="home__section-header">
+      <h2 class="home__section-title" id="home-results-title">Novedades y tendencias</h2>
+    </header>
+
+    @switch (catalog.trendingStatus()) {
+      @case ('error') {
+        <app-status-panel
+          tone="error"
+          heading="No hemos podido cargar las novedades"
+          [description]="catalog.errorMessage() ?? ''"
+        />
+      }
+      @case ('ready') {
+        <app-movie-carousel
+          [movies]="catalog.trending()"
+          label="Películas en tendencia esta semana"
+          (reveal)="reveal($event)"
+        />
+      }
+      @default {
+        <app-status-panel
+          tone="loading"
+          heading="Cargando la cartelera…"
+          description="Un momento, estamos montando la bobina."
+        />
+      }
+    }
+  }
+</section>
+
+<app-curiosities-dialog />

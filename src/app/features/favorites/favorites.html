@@ -1,0 +1,60 @@
+<section class="favorites" aria-labelledby="favorites-title">
+  <header class="favorites__header">
+    <div>
+      <p class="favorites__eyebrow">Tu colección</p>
+      <h1 class="favorites__title" id="favorites-title">Favoritos</h1>
+      <p class="favorites__count" role="status">
+        @if (favorites.count(); as total) {
+          {{ total }} {{ total === 1 ? 'película guardada' : 'películas guardadas' }}.
+        } @else {
+          Todavía no has guardado ninguna película.
+        }
+      </p>
+    </div>
+
+    @if (!favorites.isEmpty()) {
+      <button class="favorites__clear" type="button" (click)="favorites.clear()">
+        Vaciar la colección
+      </button>
+    }
+  </header>
+
+  @if (favorites.isEmpty()) {
+    <app-status-panel
+      tone="empty"
+      heading="Tu bobina está vacía"
+      description="Pulsa el corazón de cualquier tarjeta para guardar una película y volver a ella cuando quieras."
+    >
+      <a class="favorites__cta" routerLink="/">Explorar las novedades</a>
+    </app-status-panel>
+  } @else {
+    <div class="favorites__toolbar">
+      <app-genre-filter
+        [genres]="genres()"
+        [selected]="genre()"
+        (selectedChange)="onGenreChange($event)"
+      />
+      <app-view-toggle [view]="view()" (viewChange)="view.set($event)" />
+    </div>
+
+    @if (pagedItems().length) {
+      <ul class="favorites__grid" [class.favorites__grid--list]="view() === 'list'">
+        @for (movie of pagedItems(); track movie.id) {
+          <li class="favorites__grid-item">
+            <app-movie-card [movie]="movie" [layout]="view()" (reveal)="reveal($event)" />
+          </li>
+        }
+      </ul>
+
+      <app-pagination [page]="page()" [totalPages]="totalPages()" (pageChange)="page.set($event)" />
+    } @else {
+      <app-status-panel
+        tone="empty"
+        heading="Sin resultados para ese género"
+        description="Prueba a elegir otro género o vuelve a ver todas tus películas guardadas."
+      />
+    }
+  }
+</section>
+
+<app-curiosities-dialog />
