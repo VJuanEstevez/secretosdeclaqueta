@@ -45,3 +45,5 @@ Thumbs.db
 
 # Configuración local con claves de API (nunca versionar)
 /public/env.js
+.vercel
+.env*
