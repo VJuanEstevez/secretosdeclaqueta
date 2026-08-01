@@ -38,7 +38,7 @@ const ROUTES: readonly Route[] = [
 ];
 
 function authHeaders(): HeadersInit {
-  const token = process.env.TMDB_ACCESS_TOKEN;
+  const token = process.env['TMDB_ACCESS_TOKEN'];
   return token
     ? { Authorization: `Bearer ${token}`, Accept: 'application/json' }
     : { Accept: 'application/json' };
@@ -46,9 +46,8 @@ function authHeaders(): HeadersInit {
 
 /** El token v4 tiene prioridad; la api_key v3 solo se añade si no hay token. */
 function applyApiKey(url: URL): void {
-  if (!process.env.TMDB_ACCESS_TOKEN && process.env.TMDB_API_KEY) {
-    url.searchParams.set('api_key', process.env.TMDB_API_KEY);
-  }
+  if (!process.env['TMDB_ACCESS_TOKEN'] && process.env['TMDB_API_KEY']) {
+  url.searchParams.set('api_key', process.env['TMDB_API_KEY']!);  }
 }
 
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
