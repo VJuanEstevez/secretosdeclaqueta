@@ -1,27 +1,16 @@
-import type { IncomingMessage, ServerResponse } from 'node:http';
 import Anthropic from '@anthropic-ai/sdk';
-import { clientIp, createRateLimiter } from './_lib/rate-limit';
 
 /**
  * Función serverless de Vercel: es el único sitio que conoce
  * ANTHROPIC_API_KEY. El cliente (AiCuriositiesService) llama a este mismo
  * origen en `/api/curiosities`, así que no hace falta configurar CORS.
  * Ver docs/integracion-ia.md para el contrato HTTP completo.
+ *
+ * Sin imports relativos a otros ficheros de `api/`: el builder de Vercel no
+ * empaqueta módulos locales compartidos junto al de la función (el fichero
+ * referenciado llega tal cual al runtime, sin transformar), así que cada
+ * función va autocontenida a propósito.
  */
-
-interface MoviePayload {
-  id?: unknown;
-  title?: unknown;
-  originalTitle?: unknown;
-  releaseYear?: unknown;
-  director?: unknown;
-  cast?: unknown;
-  genres?: unknown;
-  runtimeMinutes?: unknown;
-  tagline?: unknown;
-  overview?: unknown;
-  productionCompanies?: unknown;
-}
 
 const SYSTEM_PROMPT = `Eres documentalista de cine. Devuelves curiosidades verificables
 sobre el rodaje, la producción o la recepción de una película: decisiones de dirección,
@@ -54,28 +43,47 @@ const OUTPUT_SCHEMA = {
   },
   required: ['curiosities'],
   additionalProperties: false,
-} as const;
+};
 
 const client = new Anthropic(); // lee ANTHROPIC_API_KEY del entorno de Vercel
 
 // Cada llamada exitosa cuesta una petición real a Claude: límite más estricto que el del catálogo.
-const isRateLimited = createRateLimiter({ limit: 10, windowMs: 60_000 });
+const RATE_LIMIT = 10;
+const RATE_WINDOW_MS = 60_000;
+const hits = new Map();
+
+function isRateLimited(key) {
+  const now = Date.now();
+  const entry = hits.get(key);
+  if (!entry || now > entry.resetAt) {
+    hits.set(key, { count: 1, resetAt: now + RATE_WINDOW_MS });
+    return false;
+  }
+  entry.count += 1;
+  return entry.count > RATE_LIMIT;
+}
+
+function clientIp(req) {
+  const forwarded = req.headers['x-forwarded-for'];
+  const header = Array.isArray(forwarded) ? forwarded[0] : forwarded;
+  return header?.split(',')[0]?.trim() || req.socket.remoteAddress || 'unknown';
+}
 
 const MAX_BODY_BYTES = 20_000;
 const MAX_FIELD_LENGTH = 500;
 
-function truncate(value: unknown, max = MAX_FIELD_LENGTH): string {
+function truncate(value, max = MAX_FIELD_LENGTH) {
   return typeof value === 'string' ? value.slice(0, max) : '';
 }
 
-function truncateList(value: unknown, maxItems: number, maxLength: number): string[] {
+function truncateList(value, maxItems, maxLength) {
   return Array.isArray(value)
     ? value.slice(0, maxItems).map((item) => truncate(item, maxLength))
     : [];
 }
 
 /** Evita que un payload adversario infle el prompt en tokens y coste. */
-function sanitizeMovie(movie: MoviePayload): MoviePayload {
+function sanitizeMovie(movie) {
   return {
     id: movie.id,
     title: truncate(movie.title, 200),
@@ -91,7 +99,7 @@ function sanitizeMovie(movie: MoviePayload): MoviePayload {
   };
 }
 
-async function generate(movie: MoviePayload) {
+async function generate(movie) {
   const response = await client.beta.messages.create({
     model: 'claude-opus-5',
     max_tokens: 16000,
@@ -122,21 +130,21 @@ async function generate(movie: MoviePayload) {
   return { curiosities: parsed.curiosities.slice(0, 5) };
 }
 
-async function readJsonBody(req: IncomingMessage): Promise<unknown> {
-  const chunks: Buffer[] = [];
+async function readJsonBody(req) {
+  const chunks = [];
   let size = 0;
   for await (const chunk of req) {
-    size += (chunk as Buffer).length;
+    size += chunk.length;
     if (size > MAX_BODY_BYTES) {
       throw Object.assign(new Error('Cuerpo de la petición demasiado grande.'), { status: 413 });
     }
-    chunks.push(chunk as Buffer);
+    chunks.push(chunk);
   }
   const raw = Buffer.concat(chunks).toString('utf8');
   return raw ? JSON.parse(raw) : {};
 }
 
-export default async function handler(req: IncomingMessage, res: ServerResponse) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res
       .writeHead(405, { 'content-type': 'application/json' })
@@ -154,7 +162,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   }
 
   try {
-    const body = (await readJsonBody(req)) as { movie?: MoviePayload };
+    const body = await readJsonBody(req);
     const movie = body.movie;
 
     if (!movie?.title) {
@@ -168,7 +176,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     res.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify(payload));
   } catch (error) {
     console.error(error);
-    const status = (error as { status?: number })?.status ?? 502;
+    const status = error?.status ?? 502;
     res
       .writeHead(status, { 'content-type': 'application/json' })
       .end(JSON.stringify({ error: 'No se han podido generar las curiosidades.' }));

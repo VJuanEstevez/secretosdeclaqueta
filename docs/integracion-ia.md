@@ -1,7 +1,7 @@
 # Integración de IA y TMDB — proxies serverless (Vercel Functions)
 
 - **Objetivo:** generar las 5 curiosidades exclusivas por película con Claude y servir el catálogo de TMDB, sin que ninguna de las dos claves (Anthropic, TMDB) llegue nunca al navegador.
-- **Pasos ejecutados:** definición de ambos contratos HTTP, implementación de los proxies como funciones serverless de Vercel (`api/curiosities.ts`, `api/tmdb.ts`), conexión desde `AiCuriositiesService`/`TmdbService` y generación de `public/env.js` en build a partir de variables de entorno de Vercel (`scripts/ensure-env.mjs`).
+- **Pasos ejecutados:** definición de ambos contratos HTTP, implementación de los proxies como funciones serverless de Vercel (`api/curiosities.js`, `api/tmdb.js`), conexión desde `AiCuriositiesService`/`TmdbService` y generación de `public/env.js` en build a partir de variables de entorno de Vercel (`scripts/ensure-env.mjs`).
 - **Resultado:** la SPA hace `POST` a `aiEndpoint` y `GET` a `tmdbEndpoint` (por defecto `/api/curiosities` y `/api/tmdb`, mismo origen); las funciones son las únicas que conocen `ANTHROPIC_API_KEY` y `TMDB_ACCESS_TOKEN`/`TMDB_API_KEY`.
 - **Reutilización:** para otro proyecto solo cambian el _system prompt_/esquema de salida del proxy de IA, y la lista blanca de rutas del proxy de TMDB.
 
@@ -22,7 +22,7 @@ window.__SDC_ENV__ = {
 };
 ```
 
-Al desplegar en Vercel, `api/curiosities.ts` y `api/tmdb.ts` se publican
+Al desplegar en Vercel, `api/curiosities.js` y `api/tmdb.js` se publican
 automáticamente como funciones serverless en el mismo dominio que la SPA: no
 hace falta configurar CORS ni una URL absoluta, y las claves viven solo como
 variables de entorno del proyecto en Vercel, nunca en el bundle.
@@ -32,7 +32,7 @@ Vercel), la aplicación funciona igualmente en modo demo: catálogo local
 (`demo-movies.ts`) y curiosidades generadas en el navegador
 (`curiosities.generator.ts`), marcadas siempre como `demo` en la interfaz.
 
-## Contrato HTTP — curiosidades (`api/curiosities.ts`)
+## Contrato HTTP — curiosidades (`api/curiosities.js`)
 
 **Petición** — `POST {aiEndpoint}`
 
@@ -69,7 +69,7 @@ El cliente sanea siempre la respuesta: descarta entradas sin `body`, recorta
 títulos a 80 caracteres y cuerpos a 400, y garantiza exactamente cinco
 elementos. Un proxy que devuelva de más o de menos no rompe la interfaz.
 
-## Contrato HTTP — catálogo (`api/tmdb.ts`)
+## Contrato HTTP — catálogo (`api/tmdb.js`)
 
 El proxy solo reenvía tres rutas, con una lista blanca de query params por
 ruta (cualquier otro parámetro se ignora):
@@ -86,11 +86,14 @@ según cuál esté configurada); el cliente nunca los ve ni los envía.
 
 ## Implementación: funciones serverless de Vercel
 
-Los proxies viven en [`api/curiosities.ts`](../api/curiosities.ts) y
-[`api/tmdb.ts`](../api/tmdb.ts), en la raíz del proyecto, con un limitador de
-peticiones compartido en [`api/_lib/rate-limit.ts`](../api/_lib/rate-limit.ts)
-(en memoria de la instancia; para un límite persistente entre invocaciones
-frías, sustituir por Vercel KV / Upstash Ratelimit). Vercel detecta cualquier
+Los proxies viven en [`api/curiosities.js`](../api/curiosities.js) y
+[`api/tmdb.js`](../api/tmdb.js), en la raíz del proyecto, cada uno
+**autocontenido** (sin imports relativos a otros ficheros de `api/`,
+incluido su propio limitador de peticiones en memoria): el builder de Vercel
+no empaqueta módulos locales compartidos junto al de la función que los
+importa, así que un helper en un fichero aparte (p. ej. `api/_lib/...`) llega
+al runtime sin transformar y rompe con `SyntaxError: Unexpected token
+'export'` en cuanto la función intenta cargarlo. Vercel detecta cualquier
 fichero bajo `api/` y lo publica como función serverless en el mismo dominio
 que la SPA, sin configuración adicional. La dependencia `@anthropic-ai/sdk`
 está en el `package.json` del proyecto; el proxy de TMDB usa solo `fetch`
@@ -110,7 +113,7 @@ Puntos clave:
   `TMDB_ENDPOINT` si algún proxy viviera en otro sitio). En local
   (`ng serve`), si no hay `public/env.js` con un endpoint real, la app sigue
   arrancando en modo demo.
-- **Lista blanca de rutas y parámetros** en `api/tmdb.ts`: el proxy no reenvía
+- **Lista blanca de rutas y parámetros** en `api/tmdb.js`: el proxy no reenvía
   cualquier ruta de TMDB, solo las tres que usa la SPA, y descarta cualquier
   query param que el cliente no debería poder controlar (por ejemplo,
   `include_adult` siempre se fuerza a `false` en el servidor).
@@ -122,7 +125,7 @@ Puntos clave:
    y `TMDB_ACCESS_TOKEN` (o `TMDB_API_KEY` como alternativa v3); `AI_ENDPOINT` /
    `TMDB_ENDPOINT` solo si algún proxy no es el de este mismo proyecto.
 3. Desplegar. El build (`npm run build`) genera `public/env.js` con esas
-   variables y Vercel publica `api/curiosities.ts` y `api/tmdb.ts` como
+   variables y Vercel publica `api/curiosities.js` y `api/tmdb.js` como
    funciones.
 
 ## Decisiones de la llamada a la API

@@ -21,8 +21,8 @@ en el navegador, sin necesidad de ninguna clave.
 
 La SPA nunca guarda tokens: ni el de TMDB ni el de Anthropic viajan al
 navegador. Ambos viven como variables de entorno de sus respectivos proxies
-serverless ([`api/tmdb.ts`](api/tmdb.ts) y
-[`api/curiosities.ts`](api/curiosities.ts)); `public/env.js` solo indica a qué
+serverless ([`api/tmdb.js`](api/tmdb.js) y
+[`api/curiosities.js`](api/curiosities.js)); `public/env.js` solo indica a qué
 proxy llamar:
 
 ```js

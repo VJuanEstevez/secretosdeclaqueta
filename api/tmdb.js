@@ -1,10 +1,34 @@
-import { clientIp, createRateLimiter } from './_lib/rate-limit.js';
+/**
+ * Sin imports relativos a otros ficheros de `api/`: el builder de Vercel no
+ * empaqueta módulos locales compartidos junto al de la función (el fichero
+ * referenciado llega tal cual al runtime, sin transformar), así que cada
+ * función va autocontenida a propósito.
+ */
 
 const API_BASE = 'https://api.themoviedb.org/3';
 const LANGUAGE = 'es-ES';
 const MAX_QUERY_LENGTH = 80;
 
-const isRateLimited = createRateLimiter({ limit: 30, windowMs: 60_000 });
+const RATE_LIMIT = 30;
+const RATE_WINDOW_MS = 60_000;
+const hits = new Map();
+
+function isRateLimited(key) {
+  const now = Date.now();
+  const entry = hits.get(key);
+  if (!entry || now > entry.resetAt) {
+    hits.set(key, { count: 1, resetAt: now + RATE_WINDOW_MS });
+    return false;
+  }
+  entry.count += 1;
+  return entry.count > RATE_LIMIT;
+}
+
+function clientIp(req) {
+  const forwarded = req.headers['x-forwarded-for'];
+  const header = Array.isArray(forwarded) ? forwarded[0] : forwarded;
+  return header?.split(',')[0]?.trim() || req.socket.remoteAddress || 'unknown';
+}
 
 const ROUTES = [
   {
@@ -12,10 +36,10 @@ const ROUTES = [
     upstreamPath: () => '/trending/movie/week',
     allowedParams: [],
   },
-  { 
-    match: /^\/search\/movie$/, 
-    upstreamPath: () => '/search/movie', 
-    allowedParams: ['query'] 
+  {
+    match: /^\/search\/movie$/,
+    upstreamPath: () => '/search/movie',
+    allowedParams: ['query'],
   },
   {
     match: /^\/movie\/(\d+)$/,
@@ -84,17 +108,11 @@ export default async function handler(req, res) {
   }
 
   try {
-    console.log('Llamando a TMDB URL:', upstreamUrl.toString());
-    console.log('¿Tiene token de acceso?', Boolean(process.env['TMDB_ACCESS_TOKEN']));
-    console.log('¿Tiene API key?', Boolean(process.env['TMDB_API_KEY']));
-
     const upstreamResponse = await fetch(upstreamUrl, { headers: authHeaders() });
     const body = await upstreamResponse.text();
-    
-    console.log('Respuesta de TMDB Status:', upstreamResponse.status);
-    
+
     if (!upstreamResponse.ok) {
-      console.error('Error devuelto por TMDB:', body);
+      console.error('TMDB respondió con error:', upstreamResponse.status);
     }
 
     res.writeHead(upstreamResponse.status, { 'content-type': 'application/json' }).end(body);
