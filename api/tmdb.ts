@@ -95,12 +95,23 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     upstreamUrl.searchParams.set('include_adult', 'false');
   }
 
-  try {
+try {
+    console.log('Llamando a TMDB URL:', upstreamUrl.toString());
+    console.log('¿Tiene token de acceso?', Boolean(process.env['TMDB_ACCESS_TOKEN']));
+    console.log('¿Tiene API key?', Boolean(process.env['TMDB_API_KEY']));
+
     const upstreamResponse = await fetch(upstreamUrl, { headers: authHeaders() });
     const body = await upstreamResponse.text();
+    
+    console.log('Respuesta de TMDB Status:', upstreamResponse.status);
+    
+    if (!upstreamResponse.ok) {
+      console.error('Error devuelto por TMDB:', body);
+    }
+
     res.writeHead(upstreamResponse.status, { 'content-type': 'application/json' }).end(body);
   } catch (error) {
-    console.error(error);
+    console.error('Error de red al contactar con TMDB:', error);
     res
       .writeHead(502, { 'content-type': 'application/json' })
       .end(JSON.stringify({ error: 'No se ha podido contactar con TMDB.' }));
