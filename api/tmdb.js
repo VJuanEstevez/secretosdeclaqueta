@@ -1,15 +1,4 @@
-import type { IncomingMessage, ServerResponse } from 'node:http';
-import { clientIp, createRateLimiter } from './_lib/rate-limit';
-
-/**
- * Proxy de catálogo: es el único sitio que conoce el token/api_key de TMDB.
- * El cliente (TmdbService) llama a `/api/tmdb/...` en vez de a
- * api.themoviedb.org directamente, así el token nunca llega al navegador.
- *
- * Solo reenvía las tres rutas que usa la SPA, con una lista blanca de query
- * params por ruta: evita que un cliente inyecte parámetros arbitrarios en la
- * petición a TMDB (p. ej. forzar `include_adult=true`).
- */
+import { clientIp, createRateLimiter } from './_lib/rate-limit.js';
 
 const API_BASE = 'https://api.themoviedb.org/3';
 const LANGUAGE = 'es-ES';
@@ -17,19 +6,17 @@ const MAX_QUERY_LENGTH = 80;
 
 const isRateLimited = createRateLimiter({ limit: 30, windowMs: 60_000 });
 
-interface Route {
-  readonly match: RegExp;
-  readonly upstreamPath: (groups: string[]) => string;
-  readonly allowedParams: readonly string[];
-}
-
-const ROUTES: readonly Route[] = [
+const ROUTES = [
   {
     match: /^\/trending\/movie\/week$/,
     upstreamPath: () => '/trending/movie/week',
     allowedParams: [],
   },
-  { match: /^\/search\/movie$/, upstreamPath: () => '/search/movie', allowedParams: ['query'] },
+  { 
+    match: /^\/search\/movie$/, 
+    upstreamPath: () => '/search/movie', 
+    allowedParams: ['query'] 
+  },
   {
     match: /^\/movie\/(\d+)$/,
     upstreamPath: ([id]) => `/movie/${id}`,
@@ -37,7 +24,7 @@ const ROUTES: readonly Route[] = [
   },
 ];
 
-function authHeaders(): HeadersInit {
+function authHeaders() {
   const token = process.env['TMDB_ACCESS_TOKEN'];
   return token
     ? { Authorization: `Bearer ${token}`, Accept: 'application/json' }
@@ -45,12 +32,13 @@ function authHeaders(): HeadersInit {
 }
 
 /** El token v4 tiene prioridad; la api_key v3 solo se añade si no hay token. */
-function applyApiKey(url: URL): void {
+function applyApiKey(url) {
   if (!process.env['TMDB_ACCESS_TOKEN'] && process.env['TMDB_API_KEY']) {
-  url.searchParams.set('api_key', process.env['TMDB_API_KEY']!);  }
+    url.searchParams.set('api_key', process.env['TMDB_API_KEY']);
+  }
 }
 
-export default async function handler(req: IncomingMessage, res: ServerResponse) {
+export default async function handler(req, res) {
   if (req.method !== 'GET') {
     res
       .writeHead(405, { 'content-type': 'application/json' })
@@ -95,7 +83,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     upstreamUrl.searchParams.set('include_adult', 'false');
   }
 
-try {
+  try {
     console.log('Llamando a TMDB URL:', upstreamUrl.toString());
     console.log('¿Tiene token de acceso?', Boolean(process.env['TMDB_ACCESS_TOKEN']));
     console.log('¿Tiene API key?', Boolean(process.env['TMDB_API_KEY']));
